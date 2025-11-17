@@ -357,15 +357,20 @@ class ShipmentResultsBillingWeight implements ModelInterface, ArrayAccess, \Json
      */
     public function setWeight($weight)
     {
+
+       
         if (is_null($weight)) {
             throw new \InvalidArgumentException('non-nullable weight cannot be null');
         }
         if ((mb_strlen($weight) > 8)) {
+            
             throw new \InvalidArgumentException('invalid length for $weight when calling ShipmentResultsBillingWeight., must be smaller than or equal to 8.');
         }
-        if ((mb_strlen($weight) < 8)) {
+
+        //Falsch in der Beschreibung. Die Apüi Returnd z.b 10.0
+        /*if ((mb_strlen($weight) < 8)) {
             throw new \InvalidArgumentException('invalid length for $weight when calling ShipmentResultsBillingWeight., must be bigger than or equal to 8.');
-        }
+        }*/
 
         $this->container['weight'] = $weight;
 
