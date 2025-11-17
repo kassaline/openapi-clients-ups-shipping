@@ -399,16 +399,26 @@ class ObjectSerializer
         if (strcasecmp(substr($class, -2), '[]') === 0) {
             $data = is_string($data) ? json_decode($data) : $data;
 
-            if (!is_array($data)) {
+            // Handle arrays, objects (stdClass from JSON), or single items
+            if (!is_array($data) && !is_object($data)) {
                 throw new \InvalidArgumentException("Invalid array '$class'");
             }
 
             $subClass = substr($class, 0, -2);
-            $values = [];
-            foreach ($data as $key => $value) {
-                $values[] = self::deserialize($value, $subClass, null);
+            
+            // If it's an array, process each element
+            if (is_array($data)) {
+                $values = [];
+                foreach ($data as $key => $value) {
+                    $values[] = self::deserialize($value, $subClass, null);
+                }
+                return $values;
             }
-            return $values;
+            
+            // If it's a single object (not an array), treat it as single-item array
+            if (is_object($data)) {
+                return [self::deserialize($data, $subClass, null)];
+            }
         }
 
         if (preg_match('/^(array<|map\[)/', $class)) { // for associative array e.g. array<string,int>
